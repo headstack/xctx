@@ -7,7 +7,7 @@ DOC_CMD ?= goreadme -types -constants -factories -functions -methods -variabless
 DOC_FILE ?= README.md
 
 tools-current:
-	go install github.com/mfridman/tparse@v0.17.0
+	go install github.com/mfridman/tparse@v0.18.0
 
 tools-update:
 	go install github.com/mfridman/tparse@latest
