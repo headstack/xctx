@@ -1,0 +1,179 @@
+version: "2"
+run:
+  go: "1.27"
+  modules-download-mode: readonly
+  tests: true
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - copyloopvar
+    - dupl
+    - durationcheck
+    - errcheck
+    - errname
+    - errorlint
+    - exhaustive
+    #- gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - govet
+    - ineffassign
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnil
+    - noctx
+    - predeclared
+    - promlinter
+    #- revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - wastedassign
+    #- whitespace
+  settings:
+    dupl:
+      threshold: 300
+    errcheck:
+      check-type-assertions: true
+    gocognit:
+      min-complexity: 35
+    goconst:
+      min-len: 3
+      min-occurrences: 4
+    gocritic:
+      disabled-checks:
+        - dupImport
+        - hugeParam
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+        - wrapperFunc
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+    gocyclo:
+      min-complexity: 30
+    gomodguard:
+      blocked:
+        modules:
+          - github.com/golang/protobuf:
+              recommendations:
+                - google.golang.org/protobuf
+              reason: see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
+          - github.com/satori/go.uuid:
+              recommendations:
+                - github.com/google/uuid
+              reason: satori's package is not maintained
+          - github.com/gofrs/uuid:
+              recommendations:
+                - github.com/google/uuid
+              reason: 'see recommendation from dev-infra team: https://confluence.gtforge.com/x/gQI6Aw'
+    govet:
+      disable:
+        - fieldalignment
+      enable-all: true
+      settings:
+        shadow:
+          strict: true
+    revive:
+      enable-all-rules: true
+      rules:
+        - name: if-return
+          disabled: true
+        - name: line-length-limit
+          arguments:
+            - 120
+        - name: add-constant
+          arguments:
+            - allowInts: 0,1,2
+              allowStrs: '""'
+              maxLitCount: "3"
+          exclude:
+            - '**_test.go'
+        - name: cognitive-complexity
+          arguments:
+            - 15
+          exclude:
+            - '**_test.go'
+        - name: function-length
+          disabled: false
+          exclude:
+            - '**_test.go'
+        - name: max-public-structs
+          disabled: true
+        - name: cyclomatic
+          exclude:
+            - '**_test.go'
+        - name: redundant-import-alias
+          disabled: true
+        - name: exported
+          disabled: false
+    rowserrcheck:
+      packages:
+        - github.com/jmoiron/sqlx
+  exclusions:
+    generated: lax
+    presets:
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - gocritic
+        source: //noinspection
+      - linters:
+          - errorlint
+        source: ^\s+if _, ok := err\.\([^.]+\.InternalError\); ok {
+      - linters:
+          - bodyclose
+          - dupl
+          - gocognit
+          - goconst
+          - gosec
+          - noctx
+          - revive
+          - wrapcheck
+        path: _test\.go
+    paths:
+      - vendor
+      - mock
+      - gen
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-same-issues: 50
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/headstack/xctx
+  exclusions:
+    generated: lax
+    paths:
+      - vendor
+      - mock
+      - gen
+      - third_party$
+      - builtin$
+      - examples$
