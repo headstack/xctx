@@ -38,10 +38,10 @@ autodoc:
 	@echo "Updating documenting golang command up to selected version, which is $(DOC_CMD_VERSION)"
 	@go install github.com/posener/goreadme/cmd/goreadme@$(DOC_CMD_VERSION)
 	@echo "Preparing $(DOC_FILE) documentation for $(LIB_NAME) module"
-	@$(DOC_CMD) > $(DOC_FILE)
-	@for PKG in $$(go list -f '{{.Dir}}' ./...); do \
+	@DOC_FILE=$(DOC_FILE) DOC_CMD="$(DOC_CMD)" ./scripts/gen-readme.sh
+	@for PKG in $$(go list -f '{{.Dir}}' ./... | grep -v '^$(CURDIR)$$'); do \
 		echo "Preparing $(DOC_FILE) documentation for $$PKG"; \
-		cd $$PKG && $(DOC_CMD) > $(DOC_FILE); \
+		(cd $$PKG && DOC_FILE=$(DOC_FILE) DOC_CMD="$(DOC_CMD)" $(CURDIR)/scripts/gen-readme.sh); \
 	done
 	@echo "Done! All the project documents are up to date!"
 
